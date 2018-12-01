@@ -23,6 +23,7 @@
     function __construct() {
         require_once( plugin_dir_path( __FILE__ ) . '/libraries/action-scheduler/action-scheduler.php' );
         include_once( dirname( __FILE__ ) . '/inc/conepatrol-bot-webhook-controller.php' );
+        include_once( dirname( __FILE__ ) . '/inc/conepatrol-bot-subscribers-controller.php' );
         add_action( 'rest_api_init', array( $this, 'register_routes' ) );
         add_action( 'conepatrol_process_telegram_repsone', array( $this, 'send_message' ), 10, 3 );
 
@@ -34,8 +35,15 @@
 	 * Regiser REST routes
 	 */
     public function register_routes() {
-        $controller_instance = new ConepatrolBotWebhookController;
-        $controller_instance->register_routes();
+        $api_classes = array(
+            'ConepatrolBotWebhookController',
+            'ConepatrolBotSubscribersController',
+        );
+
+        foreach ( $api_classes as $api_class ) {
+            $controller_instance = new $api_class;
+            $controller_instance->register_routes();
+        }
     }
 
     /**
